@@ -10,7 +10,8 @@ class HistGenModel(nn.Module):
         self.args = args
         self.tokenizer = tokenizer
         self.encoder_decoder = BaseHistGen(args, tokenizer)
-        self.wsi_mapping = torch.nn.Linear(768, self.args.d_vf)# if "ctranspath" in args.image_dir else torch.nn.Linear(1024, self.args.d_vf)
+        # self.wsi_mapping = torch.nn.Linear(768, self.args.d_vf) if "ctranspath" in args.image_dir else torch.nn.Linear(1024, self.args.d_vf)
+        self.wsi_mapping = torch.nn.Linear(512, self.args.d_vf)
         self.forward = self.forward_pathology
         # self.visual_extractor = VisualExtractor(args)
 
