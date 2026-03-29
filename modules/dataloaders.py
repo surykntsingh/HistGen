@@ -29,7 +29,7 @@ class R2DataLoader(DataLoader):
                 transforms.Normalize((0.485, 0.456, 0.406),
                                      (0.229, 0.224, 0.225))])
 
-        if self.dataset_name == 'wsi_report':
+        if self.dataset_name in ('TCGA','HistAI','REG'):
             self.dataset = PathologySingleImageDataset(self.args, self.tokenizer, self.split, transform=self.transform)
         else:
             raise ValueError
