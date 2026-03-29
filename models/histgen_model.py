@@ -22,7 +22,7 @@ class HistGenModel(nn.Module):
 
     def forward_pathology(self, images, targets=None, mode='train', update_opts={}):
 
-        print(f'images: {images.shape}')
+        # print(f'images: {images.shape}')
         att_feats = self.wsi_mapping(images)
         fc_feats = torch.mean(att_feats, dim=1)
         

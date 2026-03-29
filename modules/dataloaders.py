@@ -48,7 +48,7 @@ class R2DataLoader(DataLoader):
         #* image_ids & report_ids are the same thing
         images_id, images, reports_ids, reports_masks, seq_lengths = zip(*data) #* data is a list of tuples
 
-        print(f'dataloader images: {images[0].shape}, len: {len(images)}')
+        # print(f'dataloader images: {images[0].shape}, len: {len(images)}')
         images = torch.stack(images, 0)
         max_seq_length = max(seq_lengths) #* Calculate the max_seq_length of the batch
 
