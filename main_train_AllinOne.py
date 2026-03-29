@@ -9,12 +9,12 @@ from modules.trainer_AllinOne import Trainer
 from modules.loss import compute_loss
 from models.histgen_model import HistGenModel
 #* Baselines
-from models.r2gen import R2GenModel
-from models.r2gen_cmn import BaseCMNModel
-from models.M2Transformer import M2Transformer
-from models.PlainTransformer import PlainTransformer
-from models.ShowTellModel import ShowTell
-from models.UpDownAttn import UpDownAttn
+# from models.r2gen import R2GenModel
+# from models.r2gen_cmn import BaseCMNModel
+# from models.M2Transformer import M2Transformer
+# from models.PlainTransformer import PlainTransformer
+# from models.ShowTellModel import ShowTell
+# from models.UpDownAttn import UpDownAttn
 #*
 
 def parse_agrs():
@@ -120,22 +120,24 @@ def main():
 
     
     # build model architecture
-    if args.model_name == 'r2gen':
-        model = R2GenModel(args, tokenizer)
-    elif args.model_name == 'r2gen_cmn': 
-        model = BaseCMNModel(args, tokenizer)
-    elif args.model_name == 'm2transformer':
-        model = M2Transformer(args, tokenizer)
-    elif args.model_name == 'transformer':
-        model = PlainTransformer(args, tokenizer)
-    elif args.model_name == 'showtell':
-        model = ShowTell(args, tokenizer)
-    elif args.model_name == 'updown':
-        model = UpDownAttn(args, tokenizer)
-    elif args.model_name == 'histgen':
-        model = HistGenModel(args, tokenizer)
-    else:
-        raise ValueError('Invalid model name')
+    # if args.model_name == 'r2gen':
+    #     model = R2GenModel(args, tokenizer)
+    # elif args.model_name == 'r2gen_cmn':
+    #     model = BaseCMNModel(args, tokenizer)
+    # elif args.model_name == 'm2transformer':
+    #     model = M2Transformer(args, tokenizer)
+    # elif args.model_name == 'transformer':
+    #     model = PlainTransformer(args, tokenizer)
+    # elif args.model_name == 'showtell':
+    #     model = ShowTell(args, tokenizer)
+    # elif args.model_name == 'updown':
+    #     model = UpDownAttn(args, tokenizer)
+    # elif args.model_name == 'histgen':
+    #     model = HistGenModel(args, tokenizer)
+    # else:
+    #     raise ValueError('Invalid model name')
+
+    model = HistGenModel(args, tokenizer)
     
     # get function handles of loss and metrics
     criterion = compute_loss
