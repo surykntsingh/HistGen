@@ -77,7 +77,7 @@ def parse_agrs():
     parser.add_argument('--save_period', type=int, default=1, help='the saving period.')
     parser.add_argument('--monitor_mode', type=str, default='max', choices=['min', 'max'], help='whether to max or min the metric.')
     parser.add_argument('--monitor_metric', type=str, default='BLEU_4', help='the metric to be monitored.')
-    parser.add_argument('--early_stop', type=int, default=50, help='the patience of training.')
+    parser.add_argument('--early_stop', type=int, default=20, help='the patience of training.')
     parser.add_argument('--log_period', type=int, default=1000, help='the logging interval (in batches).')
 
     # Optimization
