@@ -31,7 +31,7 @@ def parse_agrs():
     parser.add_argument('--max_seq_length', type=int, default=600, help='the maximum sequence length of the reports.')
     parser.add_argument('--threshold', type=int, default=3, help='the cut off frequency for the words.')
     parser.add_argument('--num_workers', type=int, default=2, help='the number of workers for dataloader.')
-    parser.add_argument('--batch_size', type=int, default=1, help='the number of samples for a batch')
+    parser.add_argument('--batch_size', type=int, default=16, help='the number of samples for a batch')
     
     parser.add_argument('--model_name', type=str, default='histgen', choices=['histgen', 'r2gen', 'r2gen_cmn', 'm2transformer', 'transformer', 'showtell', 'updown'], help='model used for experiment')
 
@@ -42,7 +42,7 @@ def parse_agrs():
     parser.add_argument('--d_model', type=int, default=512, help='the dimension of Transformer.')
     parser.add_argument('--d_ff', type=int, default=512, help='the dimension of FFN.')
     parser.add_argument('--d_vf', type=int, default=2048, help='the dimension of the patch features.')
-    parser.add_argument('--num_heads', type=int, default=4, help='the number of heads in Transformer.')
+    parser.add_argument('--num_heads', type=int, default=8, help='the number of heads in Transformer.')
     parser.add_argument('--num_layers', type=int, default=3, help='the number of layers of Transformer.')
     parser.add_argument('--dropout', type=float, default=0.1, help='the dropout rate of Transformer.')
     parser.add_argument('--logit_layers', type=int, default=1, help='the number of the logit layer.')
