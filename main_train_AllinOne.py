@@ -33,7 +33,7 @@ def parse_agrs():
     parser.add_argument('--num_workers', type=int, default=2, help='the number of workers for dataloader.')
     parser.add_argument('--batch_size', type=int, default=1, help='the number of samples for a batch')
     
-    # parser.add_argument('--model_name', type=str, default='histgen', choices=['histgen', 'r2gen', 'r2gen_cmn', 'm2transformer', 'transformer', 'showtell', 'updown'], help='model used for experiment')
+    parser.add_argument('--model_name', type=str, default='histgen', choices=['histgen', 'r2gen', 'r2gen_cmn', 'm2transformer', 'transformer', 'showtell', 'updown'], help='model used for experiment')
 
     # Model settings (for visual extractor)
     # parser.add_argument('--visual_extractor', type=str, default='resnet101', help='the visual extractor to be used.')
