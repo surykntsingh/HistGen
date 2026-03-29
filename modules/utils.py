@@ -1,5 +1,5 @@
 import numpy as np
-import cv2
+# import cv2
 import torch
 
 
@@ -57,14 +57,14 @@ def repeat_tensors(n, x):
     return x
 
 
-def generate_heatmap(image, weights):
-    image = image.transpose(1, 2, 0)
-    height, width, _ = image.shape
-    weights = weights.reshape(int(weights.shape[0] ** 0.5), int(weights.shape[0] ** 0.5))
-    weights = weights - np.min(weights)
-    weights = weights / np.max(weights)
-    weights = cv2.resize(weights, (width, height))
-    weights = np.uint8(255 * weights)
-    heatmap = cv2.applyColorMap(weights, cv2.COLORMAP_JET)
-    result = heatmap * 0.5 + image * 0.5
-    return result
+# def generate_heatmap(image, weights):
+#     image = image.transpose(1, 2, 0)
+#     height, width, _ = image.shape
+#     weights = weights.reshape(int(weights.shape[0] ** 0.5), int(weights.shape[0] ** 0.5))
+#     weights = weights - np.min(weights)
+#     weights = weights / np.max(weights)
+#     weights = cv2.resize(weights, (width, height))
+#     weights = np.uint8(255 * weights)
+#     heatmap = cv2.applyColorMap(weights, cv2.COLORMAP_JET)
+#     result = heatmap * 0.5 + image * 0.5
+#     return result
