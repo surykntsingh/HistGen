@@ -58,6 +58,11 @@ class BaseDataset(Dataset):
 
     def __len__(self):
         return len(self.examples)
+
+    def read_json_file(self, json_path):
+        with open(json_path) as f:
+            d = json.load(f)
+        return d
     
 class PathologySingleImageDataset(BaseDataset):
     def __getitem__(self, idx):
