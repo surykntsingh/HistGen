@@ -75,7 +75,7 @@ def parse_agrs():
 
     # Trainer settings
     parser.add_argument('--n_gpu', type=str, default='0', help='the number of gpus to be used.')
-    parser.add_argument('--epochs', type=int, default=100, help='the number of training epochs.')
+    parser.add_argument('--epochs', type=int, default=150, help='the number of training epochs.')
     parser.add_argument('--save_dir', type=str, default='results/BRCA/1/', help='the patch to save the models.')
     parser.add_argument('--record_dir', type=str, default='records/BRCA/1/', help='the patch to save the results of experiments')
     parser.add_argument('--save_period', type=int, default=1, help='the saving period.')
@@ -87,7 +87,7 @@ def parse_agrs():
     # Optimization
     parser.add_argument('--optim', type=str, default='Adam', help='the type of the optimizer.')
     parser.add_argument('--lr_ve', type=float, default=5e-5, help='the learning rate for the visual extractor.')
-    parser.add_argument('--lr_ed', type=float, default=1e-4, help='the learning rate for the remaining parameters.')
+    parser.add_argument('--lr_ed', type=float, default=1e-5, help='the learning rate for the remaining parameters.')
     parser.add_argument('--weight_decay', type=float, default=5e-5, help='the weight decay.')
     parser.add_argument('--amsgrad', type=bool, default=True, help='.')
 
