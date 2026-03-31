@@ -58,7 +58,7 @@ class BaseTester(object):
         return device, list_ids
 
     def _load_checkpoint(self, load_path):
-        load_path = str(load_path)
+        load_path = f'{str(load_path)}/model_best.pth'
         self.logger.info("Loading checkpoint: {} ...".format(load_path))
         checkpoint = torch.load(load_path)
         self.model.load_state_dict(checkpoint['state_dict'])
