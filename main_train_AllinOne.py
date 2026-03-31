@@ -146,7 +146,7 @@ def main():
     # tokenizer = Tokenizer(args)
     tokenizer = MedicalReportTokenizer(args)
     
-    train_dataloader = R2DataLoader(args, tokenizer, split='train', shuffle=True)
+    train_dataloader = R2DataLoader(args, tokenizer, split='train', shuffle=False)
     val_dataloader = R2DataLoader(args, tokenizer, split='val', shuffle=False)
     test_dataloader = R2DataLoader(args, tokenizer, split='test', shuffle=False)
 
