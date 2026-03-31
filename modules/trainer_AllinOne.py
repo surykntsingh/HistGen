@@ -75,7 +75,7 @@ class BaseTrainer(object):
 
             # print logged informations to the screen
             for key, value in log.items():
-                self.logger.info('\t{:15s}: {}'.format(str(key), value))
+                self.logger.info('{} \t{:15s}: {}'.format(rank,str(key), value))
 
             # evaluate model performance according to configured metric, save best checkpoint as model_best
             best = False
@@ -92,6 +92,7 @@ class BaseTrainer(object):
                     improved = False
 
                 if improved:
+                    print(f'mnt_best: {self.mnt_best}, mnt_metric: {log[self.mnt_metric]}')
                     self.mnt_best = log[self.mnt_metric]
                     not_improved_count = 0
                     best = True
