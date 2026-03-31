@@ -60,7 +60,7 @@ class BaseTrainer(object):
     def _train_epoch(self, epoch, model_name):
         raise NotImplementedError
 
-    def train(self):
+    def train(self, rank):
         not_improved_count = 0
         for epoch in range(self.start_epoch, self.epochs + 1):
             print("epoch: ", epoch)
@@ -105,7 +105,7 @@ class BaseTrainer(object):
                         self.early_stop))
                     break
 
-            if epoch % self.save_period == 0:
+            if epoch % self.save_period == 0 and rank==0:
                 self._save_checkpoint(epoch, save_best=best)
         self._print_best()
         self._print_best_to_file()
@@ -142,7 +142,7 @@ class BaseTrainer(object):
                 "Warning: The number of GPU\'s configured to use is {}, but only {} are available " "on this machine.".format(
                     n_gpu_use, n_gpu))
             n_gpu_use = n_gpu
-        device = torch.device('cuda:0' if n_gpu_use > 0 else 'cpu')
+        device = torch.device('cuda' if n_gpu_use > 0 else 'cpu')
         list_ids = list(range(n_gpu_use))
         return device, list_ids
 
@@ -205,6 +205,7 @@ class Trainer(BaseTrainer):
         self.val_dataloader = val_dataloader
         self.test_dataloader = test_dataloader
         self.args = args
+        self.device = 'cuda'
 
     def _train_epoch(self, epoch, model_name):
 
@@ -233,15 +234,22 @@ class Trainer(BaseTrainer):
         self.logger.info('[{}/{}] Start to evaluate in the validation set.'.format(epoch, self.epochs))
         self.model.eval()
         with torch.no_grad():
-            val_gts, val_res = [], []
+            val_gts_ids, val_res_ids = [], []
             for batch_idx, (images_id, images, reports_ids, reports_masks) in enumerate(self.val_dataloader):
                 images, reports_ids, reports_masks = images.to(self.device), reports_ids.to(
                     self.device), reports_masks.to(self.device)
                 output = self.model(images, mode='sample')
-                reports = self.model.tokenizer.decode_batch(output.cpu().numpy())
-                ground_truths = self.model.tokenizer.decode_batch(reports_ids[:, 1:].cpu().numpy())
-                val_res.extend(reports)
-                val_gts.extend(ground_truths)
+
+                val_res_ids.append(output)  # predict
+                val_gts_ids.append(reports_ids)  # ground truth
+
+            val_res_ids = distributed_concat(torch.cat(val_res_ids, dim=0),
+                                             len(self.val_dataloader.dataset)).cpu().numpy()
+            val_gts_ids = distributed_concat(torch.cat(val_gts_ids, dim=0),
+                                             len(self.val_dataloader.dataset)).cpu().numpy()
+
+            val_gts, val_res = self.model.module.tokenizer.decode_batch(val_gts_ids[:,1:]), self.model.module.tokenizer.decode_batch(val_res_ids)
+
             val_met = self.metric_ftns({i: [gt] for i, gt in enumerate(val_gts)},
                                        {i: [re] for i, re in enumerate(val_res)})
             log.update(**{'val_' + k: v for k, v in val_met.items()})
@@ -249,15 +257,22 @@ class Trainer(BaseTrainer):
         self.logger.info('[{}/{}] Start to evaluate in the test set.'.format(epoch, self.epochs))
         self.model.eval()
         with torch.no_grad():
-            test_gts, test_res = [], []
+            test_gts_ids, test_res_ids = [], []
             for batch_idx, (images_id, images, reports_ids, reports_masks) in enumerate(self.test_dataloader):
                 images, reports_ids, reports_masks = images.to(self.device), reports_ids.to(
                     self.device), reports_masks.to(self.device)
                 output = self.model(images, mode='sample')
-                reports = self.model.tokenizer.decode_batch(output.cpu().numpy())
-                ground_truths = self.model.tokenizer.decode_batch(reports_ids[:, 1:].cpu().numpy())
-                test_res.extend(reports)
-                test_gts.extend(ground_truths)
+
+                test_res_ids.append(output)  # predict
+                test_gts_ids.append(reports_ids)  # ground truth
+
+            test_res_ids = distributed_concat(torch.cat(test_res_ids, dim=0),
+                                              len(self.test_dataloader.dataset)).cpu().numpy()
+            test_gts_ids = distributed_concat(torch.cat(test_gts_ids, dim=0),
+                                              len(self.test_dataloader.dataset)).cpu().numpy()
+
+            test_gts, test_res = self.model.module.tokenizer.decode_batch(test_gts_ids[:,1:]), self.model.module.tokenizer.decode_batch(test_res_ids)
+
             test_met = self.metric_ftns({i: [gt] for i, gt in enumerate(test_gts)},
                                         {i: [re] for i, re in enumerate(test_res)})
             log.update(**{'test_' + k: v for k, v in test_met.items()})
@@ -265,3 +280,10 @@ class Trainer(BaseTrainer):
         self.lr_scheduler.step()
 
         return log
+
+def distributed_concat(tensor, num_total_examples):
+    output_tensors = [tensor.clone() for _ in range(torch.distributed.get_world_size())]
+    torch.distributed.all_gather(output_tensors, tensor)
+    concat = torch.cat(output_tensors, dim=0)
+    # truncate the dummy elements added by SequentialDistributedSampler
+    return concat[:num_total_examples]
