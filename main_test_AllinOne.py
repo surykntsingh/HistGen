@@ -22,7 +22,7 @@ def parse_agrs():
 
     parser.add_argument('--threshold', type=int, default=3, help='the cut off frequency for the words.')
     parser.add_argument('--num_workers', type=int, default=2, help='the number of workers for dataloader.')
-    parser.add_argument('--batch_size', type=int, default=16, help='the number of samples for a batch')
+    parser.add_argument('--batch_size', type=int, default=1, help='the number of samples for a batch')
     
     parser.add_argument('--model_name', type=str, default='histgen', choices=['histgen'], help='model used for experiment')
 
