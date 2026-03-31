@@ -48,8 +48,8 @@ class BaseTrainer(object):
         self.start_epoch = 1
         self.checkpoint_dir = args.save_dir
 
-        if not os.path.exists(self.checkpoint_dir):
-            os.makedirs(self.checkpoint_dir)
+        # if not os.path.exists(self.checkpoint_dir):
+        #     os.makedirs(self.checkpoint_dir)
 
         if args.resume is not None:
             self._resume_checkpoint(args.resume)
