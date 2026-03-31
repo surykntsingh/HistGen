@@ -65,7 +65,7 @@ def parse_agrs():
     parser.add_argument('--epochs', type=int, default=100, help='the number of training epochs.')
     parser.add_argument('--save_dir', type=str, default='results/BRCA/1/', help='the patch to save the models.')
     parser.add_argument('--record_dir', type=str, default='records/BRCA/1/', help='the patch to save the results of experiments')
-    parser.add_argument('--load', type=str, default='results/BRCA/1/', help='the patch to save the models.')
+    parser.add_argument('--load', type=str, default='results/BRCA/1/', help='whether to load a pre-trained model.')
 
     parser.add_argument('--save_period', type=int, default=1, help='the saving period.')
     parser.add_argument('--monitor_mode', type=str, default='max', choices=['min', 'max'], help='whether to max or min the metric.')
@@ -88,7 +88,7 @@ def parse_agrs():
     # Others
     parser.add_argument('--seed', type=int, default=9233, help='.')
     parser.add_argument('--resume', type=str, help='whether to resume the training from existing checkpoints.')
-    parser.add_argument('--load', type=str, help='whether to load a pre-trained model.')
+    # parser.add_argument('--load', type=str, help='whether to load a pre-trained model.')
 
     args = parser.parse_args()
     return args
