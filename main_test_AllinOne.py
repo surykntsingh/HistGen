@@ -134,7 +134,7 @@ def main():
     # tokenizer = Tokenizer(args)
     tokenizer = MedicalReportTokenizer(args)
     test_dataloader = R2DataLoader(args, tokenizer, split='test', shuffle=False)
-    model = HistGenModel(args, tokenizer)
+    model = HistGenModel(args, tokenizer).to(local_rank)
     model = DDP(model, device_ids=[local_rank], output_device=local_rank, find_unused_parameters=True)
 
     # get function handles of loss and metrics
