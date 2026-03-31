@@ -81,13 +81,13 @@ def parse_agrs():
     parser.add_argument('--save_period', type=int, default=1, help='the saving period.')
     parser.add_argument('--monitor_mode', type=str, default='max', choices=['min', 'max'], help='whether to max or min the metric.')
     parser.add_argument('--monitor_metric', type=str, default='BLEU_4', help='the metric to be monitored.')
-    parser.add_argument('--early_stop', type=int, default=20, help='the patience of training.')
+    parser.add_argument('--early_stop', type=int, default=50, help='the patience of training.')
     parser.add_argument('--log_period', type=int, default=1000, help='the logging interval (in batches).')
 
     # Optimization
     parser.add_argument('--optim', type=str, default='Adam', help='the type of the optimizer.')
     parser.add_argument('--lr_ve', type=float, default=5e-5, help='the learning rate for the visual extractor.')
-    parser.add_argument('--lr_ed', type=float, default=1e-5, help='the learning rate for the remaining parameters.')
+    parser.add_argument('--lr_ed', type=float, default=5e-5, help='the learning rate for the remaining parameters.')
     parser.add_argument('--weight_decay', type=float, default=5e-5, help='the weight decay.')
     parser.add_argument('--amsgrad', type=bool, default=True, help='.')
 
