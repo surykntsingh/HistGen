@@ -1,4 +1,6 @@
 import torch
+import torch.distributed as dist
+from torch.nn.parallel import DistributedDataParallel as DDP
 import argparse
 import numpy as np
 from modules.tokenizers import Tokenizer, MedicalReportTokenizer
@@ -7,7 +9,8 @@ from modules.metrics import compute_scores
 from modules.tester_AllinOne import Tester
 from modules.loss import compute_loss
 from models.histgen_model import HistGenModel
-
+import os
+import random
 def parse_agrs():
     parser = argparse.ArgumentParser()
 
@@ -94,20 +97,45 @@ def parse_agrs():
     return args
 
 
+def setup(gpus):
+    # Let torchrun set these; fallback for safety/debug
+    os.environ['MASTER_ADDR'] = '127.0.0.1'  # Force loopback
+    os.environ['MASTER_PORT'] = '30001'  # Or any free port >1024master_port
+    os.environ['CUDA_VISIBLE_DEVICES'] = gpus
+
+    dist.init_process_group(backend='nccl')
+
+def init_seeds(seed=0, cuda_deterministic=True):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    # Speed-reproducibility tradeoff https://pytorch.org/docs/stable/notes/randomness.html
+    if cuda_deterministic:  # slower, more reproducible
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+    else:  # faster, less reproducible
+        torch.backends.cudnn.deterministic = False
+        torch.backends.cudnn.benchmark = True
+
+
 def main():
     # parse arguments
     args = parse_agrs()
+    local_rank = int(os.environ['LOCAL_RANK'])
+    world_size = int(os.environ['WORLD_SIZE'])
 
-    # fix random seeds
-    torch.manual_seed(args.seed)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-    np.random.seed(args.seed)
+    # scaling learning rate
+    args.lr_ed *= world_size
+
+    setup(args.n_gpu)
+    torch.cuda.set_device(local_rank)
+    init_seeds(args.seed + local_rank)
     
     # tokenizer = Tokenizer(args)
     tokenizer = MedicalReportTokenizer(args)
     test_dataloader = R2DataLoader(args, tokenizer, split='test', shuffle=False)
     model = HistGenModel(args, tokenizer)
+    model = DDP(model, device_ids=[local_rank], output_device=local_rank, find_unused_parameters=True)
 
     # get function handles of loss and metrics
     criterion = compute_loss
