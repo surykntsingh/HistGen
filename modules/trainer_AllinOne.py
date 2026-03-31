@@ -100,7 +100,7 @@ class BaseTrainer(object):
                     not_improved_count += 1
                     best = False
 
-                print(f'improved: {improved}, not_improved_count: {not_improved_count}')
+                print(f'improved: {improved}, not_improved_count: {not_improved_count} mnt_best: {self.mnt_best}')
 
                 if not_improved_count > self.early_stop:
                     self.logger.info("Validation performance didn\'t improve for {} epochs. " "Training stops.".format(
