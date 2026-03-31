@@ -207,7 +207,7 @@ class Trainer(BaseTrainer):
         # self.val_dataloader = val_dataloader
         # self.test_dataloader = test_dataloader
         self.args = args
-        self.device = 'cuda'
+        # self.device = 'cuda'
 
     def _train_epoch(self, epoch, model_name):
 
