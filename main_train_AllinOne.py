@@ -19,6 +19,7 @@ from models.histgen_model import HistGenModel
 # from models.ShowTellModel import ShowTell
 # from models.UpDownAttn import UpDownAttn
 #*
+import random
 
 def parse_agrs():
     parser = argparse.ArgumentParser()
@@ -110,6 +111,17 @@ def setup(gpus):
 
     dist.init_process_group(backend='nccl')
 
+def init_seeds(seed=0, cuda_deterministic=True):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    # Speed-reproducibility tradeoff https://pytorch.org/docs/stable/notes/randomness.html
+    if cuda_deterministic:  # slower, more reproducible
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+    else:  # faster, less reproducible
+        torch.backends.cudnn.deterministic = False
+        torch.backends.cudnn.benchmark = True
 
 def main():
     # parse arguments
@@ -122,6 +134,7 @@ def main():
 
     setup(args.n_gpu)
     torch.cuda.set_device(local_rank)
+    init_seeds(args.seed + local_rank)
 
     # fix random seeds
     # torch.manual_seed(args.seed)
@@ -156,7 +169,7 @@ def main():
     # else:
     #     raise ValueError('Invalid model name')
 
-    model = HistGenModel(args, tokenizer)
+    model = HistGenModel(args, tokenizer).to(local_rank)
     model = DDP(model, device_ids=[local_rank], output_device=local_rank, find_unused_parameters=True)
     
     # get function handles of loss and metrics
