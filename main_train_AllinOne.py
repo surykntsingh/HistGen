@@ -1,4 +1,7 @@
+import os
 import torch
+import torch.distributed as dist
+from torch.nn.parallel import DistributedDataParallel as DDP
 import argparse
 import numpy as np
 from modules.tokenizers import Tokenizer, MedicalReportTokenizer
@@ -99,16 +102,32 @@ def parse_agrs():
     args = parser.parse_args()
     return args
 
+def setup(gpus):
+    # Let torchrun set these; fallback for safety/debug
+    os.environ['MASTER_ADDR'] = '127.0.0.1'  # Force loopback
+    os.environ['MASTER_PORT'] = '30001'  # Or any free port >1024master_port
+    os.environ['CUDA_VISIBLE_DEVICES'] = gpus
+
+    dist.init_process_group(backend='nccl')
+
 
 def main():
     # parse arguments
     args = parse_agrs()
+    local_rank = int(os.environ['LOCAL_RANK'])
+    world_size = int(os.environ['WORLD_SIZE'])
+
+    # scaling learning rate
+    args.lr_ed *= world_size
+
+    setup(args.n_gpu)
+    torch.cuda.set_device(local_rank)
 
     # fix random seeds
-    torch.manual_seed(args.seed)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
-    np.random.seed(args.seed)
+    # torch.manual_seed(args.seed)
+    # torch.backends.cudnn.deterministic = True
+    # torch.backends.cudnn.benchmark = False
+    # np.random.seed(args.seed)
     
         
     # tokenizer = Tokenizer(args)
@@ -138,6 +157,7 @@ def main():
     #     raise ValueError('Invalid model name')
 
     model = HistGenModel(args, tokenizer)
+    model = DDP(model, device_ids=[local_rank], output_device=local_rank, find_unused_parameters=True)
     
     # get function handles of loss and metrics
     criterion = compute_loss
@@ -149,7 +169,11 @@ def main():
 
     # build trainer and start to train
     trainer = Trainer(model, criterion, metrics, optimizer, args, lr_scheduler, train_dataloader, val_dataloader, test_dataloader)
-    trainer.train()
+    checkpoint_dir = args.save_dir
+    if not os.path.exists(checkpoint_dir):
+        if local_rank == 0:
+            os.makedirs(checkpoint_dir)
+    trainer.train(local_rank)
 
 
 if __name__ == '__main__':

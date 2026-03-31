@@ -10,7 +10,8 @@ import logging
 
 
 class BaseTrainer(object):
-    def __init__(self, model, criterion, metric_ftns, optimizer, args):
+    def __init__(self, model, criterion, metric_ftns, optimizer, args, lr_scheduler, train_dataloader, val_dataloader,
+                 test_dataloader):
         self.args = args
 
         logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
@@ -18,11 +19,16 @@ class BaseTrainer(object):
         self.logger = logging.getLogger(__name__)
         
         # setup GPU device if available, move model into configured device
-        self.device, device_ids = self._prepare_device(args.n_gpu)
-        self.model = model.to(self.device)
-        if len(device_ids) > 1:
-            self.model = torch.nn.DataParallel(model, device_ids=device_ids)
+        # self.device, device_ids = self._prepare_device(args.n_gpu)
+        # self.model = model.to(self.device)
+        # if len(device_ids) > 1:
+        #     self.model = torch.nn.DataParallel(model, device_ids=device_ids)
+        self.lr_scheduler = lr_scheduler
+        self.train_dataloader = train_dataloader
+        self.val_dataloader = val_dataloader
+        self.test_dataloader = test_dataloader
 
+        self.model = model
         self.criterion = criterion
         self.metric_ftns = metric_ftns
         self.optimizer = optimizer
@@ -57,6 +63,8 @@ class BaseTrainer(object):
     def train(self):
         not_improved_count = 0
         for epoch in range(self.start_epoch, self.epochs + 1):
+            print("epoch: ", epoch)
+            self.train_dataloader.sampler.set_epoch(epoch)
             result = self._train_epoch(epoch, self.args.model_name)
 
             # save logged informations into log dict
@@ -88,6 +96,7 @@ class BaseTrainer(object):
                     best = True
                 else:
                     not_improved_count += 1
+                    best = False
 
                 print(f'improved: {improved}, not_improved_count: {not_improved_count}')
 
