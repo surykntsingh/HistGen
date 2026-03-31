@@ -199,11 +199,12 @@ class BaseTrainer(object):
 class Trainer(BaseTrainer):
     def __init__(self, model, criterion, metric_ftns, optimizer, args, lr_scheduler, train_dataloader, val_dataloader,
                  test_dataloader):
-        super(Trainer, self).__init__(model, criterion, metric_ftns, optimizer, args)
-        self.lr_scheduler = lr_scheduler
-        self.train_dataloader = train_dataloader
-        self.val_dataloader = val_dataloader
-        self.test_dataloader = test_dataloader
+        super(Trainer, self).__init__(model, criterion, metric_ftns, optimizer, args, lr_scheduler, train_dataloader, val_dataloader,
+                 test_dataloader)
+        # self.lr_scheduler = lr_scheduler
+        # self.train_dataloader = train_dataloader
+        # self.val_dataloader = val_dataloader
+        # self.test_dataloader = test_dataloader
         self.args = args
         self.device = 'cuda'
 
