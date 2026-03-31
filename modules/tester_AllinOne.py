@@ -19,15 +19,17 @@ class BaseTester(object):
         self.logger = logging.getLogger(__name__)
 
         # setup GPU device if available, move model into configured device
-        self.device, device_ids = self._prepare_device(args.n_gpu)
-        self.model = model.to(self.device)
-        if len(device_ids) > 1:
-            self.model = torch.nn.DataParallel(model, device_ids=device_ids)
+        # self.device, device_ids = self._prepare_device(args.n_gpu)
+        # self.model = model.to(self.device)
+
+        self.model = model
+        # if len(device_ids) > 1:
+        #     self.model = torch.nn.DataParallel(model, device_ids=device_ids)
 
         self.criterion = criterion
         self.metric_ftns = metric_ftns
 
-        self.epochs = self.args.epochs
+        # self.epochs = self.args.epochs
         self.save_dir = self.args.save_dir
         if not os.path.exists(self.save_dir):
             os.makedirs(self.save_dir)
@@ -74,17 +76,24 @@ class Tester(BaseTester):
         log = dict()
         self.model.eval()
         with torch.no_grad():
-            test_gts, test_res, test_ids = [], [], []
+            test_ids = []
+            test_gts_ids, test_res_ids = [], []
             for batch_idx, (images_id, images, reports_ids, reports_masks) in enumerate(tqdm(self.test_dataloader, desc='Testing')):
                 images_id, images, reports_ids, reports_masks = images_id[0], images.to(self.device), reports_ids.to(
                     self.device), reports_masks.to(self.device)
                 output = self.model(images, mode='sample')
-                reports = self.model.tokenizer.decode_batch(output.cpu().numpy())
-                ground_truths = self.model.tokenizer.decode_batch(reports_ids[:, 1:].cpu().numpy())
-                test_res.extend(reports)
-                test_gts.extend(ground_truths)
+                test_res_ids.append(output)  # predict
+                test_gts_ids.append(reports_ids)  # ground truth
                 test_ids.append(images_id)
-            
+
+            test_res_ids = distributed_concat(torch.cat(test_res_ids, dim=0),
+                                              len(self.test_dataloader.dataset)).cpu().numpy()
+            test_gts_ids = distributed_concat(torch.cat(test_gts_ids, dim=0),
+                                              len(self.test_dataloader.dataset)).cpu().numpy()
+
+            test_gts, test_res = self.model.module.tokenizer.decode_batch(
+                test_gts_ids[:, 1:]), self.model.module.tokenizer.decode_batch(test_res_ids)
+
             test_met = self.metric_ftns({i: [gt] for i, gt in enumerate(test_gts)},
                                         {i: [re] for i, re in enumerate(test_res)})
             log.update(**{'test_' + k: v for k, v in test_met.items()})
@@ -137,3 +146,11 @@ class Tester(BaseTester):
     #                     cv2.imwrite(os.path.join(self.save_dir, "attentions", "{:04d}".format(batch_idx),
     #                                              "layer_{}".format(layer_idx), "{:04d}_{}.png".format(word_idx, word)),
     #                                 heatmap)
+
+
+def distributed_concat(tensor, num_total_examples):
+    output_tensors = [tensor.clone() for _ in range(torch.distributed.get_world_size())]
+    torch.distributed.all_gather(output_tensors, tensor)
+    concat = torch.cat(output_tensors, dim=0)
+    # truncate the dummy elements added by SequentialDistributedSampler
+    return concat[:num_total_examples]
