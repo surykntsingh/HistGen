@@ -3,6 +3,7 @@ import numpy as np
 from torchvision import transforms
 from torch.utils.data import DataLoader
 from .datasets import PathologySingleImageDataset
+import math
 
 class R2DataLoader(DataLoader):
     def __init__(self, args, tokenizer, split, shuffle):
@@ -34,12 +35,19 @@ class R2DataLoader(DataLoader):
         else:
             raise ValueError
 
+        if split == 'train':
+            self.sampler = torch.utils.data.distributed.DistributedSampler(self.dataset)
+        else:
+            self.sampler = SequentialDistributedSampler(self.dataset,self.args.batch_size)
+
+
         self.init_kwargs = {
             'dataset': self.dataset,
             'batch_size': self.batch_size,
             'shuffle': self.shuffle,
             'collate_fn': self.collate_fn,
-            'num_workers': self.num_workers
+            'num_workers': self.num_workers,
+            'sampler': self.sampler
         }
         super().__init__(**self.init_kwargs)
 
@@ -63,3 +71,42 @@ class R2DataLoader(DataLoader):
 
         return images_id, images, torch.LongTensor(targets), torch.FloatTensor(targets_masks) #* Now we have the input and the label
 
+
+
+class SequentialDistributedSampler(torch.utils.data.sampler.Sampler):
+    """
+    Distributed Sampler that subsamples indicies sequentially,
+    making it easier to collate all results at the end.
+    Even though we only use this sampler for eval and predict (no training),
+    which means that the model params won't have to be synced (i.e. will not hang
+    for synchronization even if varied number of forward passes), we still add extra
+    samples to the sampler to make it evenly divisible (like in `DistributedSampler`)
+    to make it easy to `gather` or `reduce` resulting tensors at the end of the loop.
+    """
+
+    def __init__(self, dataset, batch_size, rank=None, num_replicas=None):
+        if num_replicas is None:
+            if not torch.distributed.is_available():
+                raise RuntimeError("Requires distributed package to be available")
+            num_replicas = torch.distributed.get_world_size()
+        if rank is None:
+            if not torch.distributed.is_available():
+                raise RuntimeError("Requires distributed package to be available")
+            rank = torch.distributed.get_rank()
+        self.dataset = dataset
+        self.num_replicas = num_replicas
+        self.rank = rank
+        self.batch_size = batch_size
+        self.num_samples = int(math.ceil(len(self.dataset) * 1.0 / self.batch_size / self.num_replicas)) * self.batch_size
+        self.total_size = self.num_samples * self.num_replicas
+
+    def __iter__(self):
+        indices = list(range(len(self.dataset)))
+        # add extra samples to make it evenly divisible
+        indices += [indices[-1]] * (self.total_size - len(indices))
+        # subsample
+        indices = indices[self.rank * self.num_samples : (self.rank + 1) * self.num_samples]
+        return iter(indices)
+
+    def __len__(self):
+        return self.num_samples
