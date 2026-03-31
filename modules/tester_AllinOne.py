@@ -79,8 +79,7 @@ class Tester(BaseTester):
             test_ids = []
             test_gts_ids, test_res_ids = [], []
             for batch_idx, (images_id, images, reports_ids, reports_masks) in enumerate(tqdm(self.test_dataloader, desc='Testing')):
-                images_id, images, reports_ids, reports_masks = images_id[0], images.to(self.device), reports_ids.to(
-                    self.device), reports_masks.to(self.device)
+                images_id, images, reports_ids, reports_masks = images_id[0], images.cuda(), reports_ids.cuda(), reports_masks.cuda()
                 output = self.model(images, mode='sample')
                 test_res_ids.append(output)  # predict
                 test_gts_ids.append(reports_ids)  # ground truth
