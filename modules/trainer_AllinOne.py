@@ -258,28 +258,29 @@ class Trainer(BaseTrainer):
             log.update(**{'val_' + k: v for k, v in val_met.items()})
 
         self.logger.info('[{}/{}] Start to evaluate in the test set.'.format(epoch, self.epochs))
-        dist.barrier()
-        self.model.eval()
-        with torch.no_grad():
-            test_gts_ids, test_res_ids = [], []
-            for batch_idx, (images_id, images, reports_ids, reports_masks) in enumerate(tqdm(self.test_dataloader, desc='Testing')):
-                images, reports_ids, reports_masks = images.cuda(), reports_ids.cuda(), reports_masks.cuda()
-                output = self.model(images, mode='sample')
+        if epoch % 10==0:
+            dist.barrier()
+            self.model.eval()
+            with torch.no_grad():
+                test_gts_ids, test_res_ids = [], []
+                for batch_idx, (images_id, images, reports_ids, reports_masks) in enumerate(tqdm(self.test_dataloader, desc='Testing')):
+                    images, reports_ids, reports_masks = images.cuda(), reports_ids.cuda(), reports_masks.cuda()
+                    output = self.model(images, mode='sample')
 
-                test_res_ids.append(output)  # predict
-                test_gts_ids.append(reports_ids)  # ground truth
+                    test_res_ids.append(output)  # predict
+                    test_gts_ids.append(reports_ids)  # ground truth
 
-            test_res_ids = distributed_concat(torch.cat(test_res_ids, dim=0),
-                                              len(self.test_dataloader.dataset)).cpu().numpy()
-            test_gts_ids = distributed_concat(torch.cat(test_gts_ids, dim=0),
-                                              len(self.test_dataloader.dataset)).cpu().numpy()
+                test_res_ids = distributed_concat(torch.cat(test_res_ids, dim=0),
+                                                  len(self.test_dataloader.dataset)).cpu().numpy()
+                test_gts_ids = distributed_concat(torch.cat(test_gts_ids, dim=0),
+                                                  len(self.test_dataloader.dataset)).cpu().numpy()
 
-            test_gts, test_res = self.model.module.tokenizer.decode_batch(test_gts_ids[:,1:]), self.model.module.tokenizer.decode_batch(test_res_ids)
+                test_gts, test_res = self.model.module.tokenizer.decode_batch(test_gts_ids[:,1:]), self.model.module.tokenizer.decode_batch(test_res_ids)
 
-            test_res = list(map(lambda x: 'placeholder' if x.strip() == '' else x, test_res))
-            test_met = self.metric_ftns({i: [gt] for i, gt in enumerate(test_gts)},
-                                        {i: [re] for i, re in enumerate(test_res)})
-            log.update(**{'test_' + k: v for k, v in test_met.items()})
+                test_res = list(map(lambda x: 'placeholder' if x.strip() == '' else x, test_res))
+                test_met = self.metric_ftns({i: [gt] for i, gt in enumerate(test_gts)},
+                                            {i: [re] for i, re in enumerate(test_res)})
+                log.update(**{'test_' + k: v for k, v in test_met.items()})
 
         self.lr_scheduler.step()
 
