@@ -83,8 +83,8 @@ def parse_agrs():
     # Trainer settings
     parser.add_argument('--n_gpu', type=str, default='0', help='the number of gpus to be used.')
     parser.add_argument('--epochs', type=int, default=150, help='the number of training epochs.')
-    parser.add_argument('--save_dir', type=str, default='results/BRCA/2/', help='the patch to save the models.')
-    parser.add_argument('--record_dir', type=str, default='records/BRCA/2/', help='the patch to save the results of experiments')
+    parser.add_argument('--save_dir', type=str, default='results/REG/1/', help='the patch to save the models.')
+    parser.add_argument('--record_dir', type=str, default='records/REG/1/', help='the patch to save the results of experiments')
     parser.add_argument('--save_period', type=int, default=1, help='the saving period.')
     parser.add_argument('--monitor_mode', type=str, default='max', choices=['min', 'max'], help='whether to max or min the metric.')
     parser.add_argument('--monitor_metric', type=str, default='BLEU_4', help='the metric to be monitored.')
