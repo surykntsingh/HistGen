@@ -25,11 +25,18 @@ def parse_agrs():
     parser = argparse.ArgumentParser()
 
     # Data input settings
-    parser.add_argument('--image_dir', type=str, default='/lustre/nvwulf/projects/PrasannaGroup-nvwulf/surya/datasets/TCGA_processed/brca_v2/features_conch_v15', help='the path to the directory containing the data.')
-    parser.add_argument('--ann_path', type=str, default='/lustre/nvwulf/projects/PrasannaGroup-nvwulf/surya/datasets/TCGA_processed/brca_v2/tcga_brca_reports_splits.json', help='the path to the directory containing the data.')
+    # parser.add_argument('--image_dir', type=str, default='/lustre/nvwulf/projects/PrasannaGroup-nvwulf/surya/datasets/TCGA_processed/brca_v2/features_conch_v15', help='the path to the directory containing the data.')
+    # parser.add_argument('--ann_path', type=str, default='/lustre/nvwulf/projects/PrasannaGroup-nvwulf/surya/datasets/TCGA_processed/brca_v2/tcga_brca_reports_splits.json', help='the path to the directory containing the data.')
+
+    parser.add_argument('--image_dir', type=str,
+                        default='/lustre/nvwulf/projects/PrasannaGroup-nvwulf/surya/datasets/REG_2025/train/20x_512px_0px_overlap/features_conch_v15',
+                        help='the path to the directory containing the data.')
+    parser.add_argument('--ann_path', type=str,
+                        default='/lustre/nvwulf/projects/PrasannaGroup-nvwulf/surya/datasets/REG_2025/reg_reports_splits.json',
+                        help='the path to the directory containing the data.')
 
     # Data loader settings
-    parser.add_argument('--dataset_name', type=str, default='TCGA', choices=['TCGA','HistAI','REG'], help='the dataset to be used.')
+    parser.add_argument('--dataset_name', type=str, default='REG', choices=['TCGA','HistAI','REG'], help='the dataset to be used.')
     parser.add_argument('--max_fea_length', type=int, default=10000, help='the maximum sequence length of the patch embeddings.')
 
     parser.add_argument('--max_seq_length', type=int, default=600, help='the maximum sequence length of the reports.')
