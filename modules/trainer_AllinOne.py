@@ -181,7 +181,7 @@ class BaseTrainer(object):
         if improved_val:
             self.best_recorder['val'].update(log)
 
-        if log[self.mnt_metric_test]:
+        if self.mnt_metric_test in log:
             improved_test = (self.mnt_mode == 'min' and log[self.mnt_metric_test] <= self.best_recorder['test'][
                 self.mnt_metric_test]) or \
                             (self.mnt_mode == 'max' and log[self.mnt_metric_test] >= self.best_recorder['test'][
