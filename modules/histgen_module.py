@@ -483,12 +483,11 @@ class PositionwiseFeedForward(nn.Module):
 class Embeddings(nn.Module):
     def __init__(self, d_model, vocab):
         super(Embeddings, self).__init__()
-        self.lut = nn.Embedding(vocab, d_model).cuda()
+        self.lut = nn.Embedding(vocab, d_model)
         self.d_model = d_model
 
     def forward(self, x):
-        # print(f'x: {x.device}, lut: {self.lut}')
-        return self.lut(x.cuda() ) * math.sqrt(self.d_model)
+        return self.lut(x ) * math.sqrt(self.d_model)
 
 
 class PositionalEncoding(nn.Module):
@@ -629,7 +628,8 @@ class BaseHistGen(AttModel):
             past = [fc_feats_ph.new_zeros(self.num_layers * 2, fc_feats_ph.shape[0], 0, self.d_model),
                     fc_feats_ph.new_zeros(self.num_layers * 2, fc_feats_ph.shape[0], 0, self.d_model)]
         else:
-            ys = torch.cat([state[0][0].cuda(), it.unsqueeze(1).cuda()], dim=1)
+            print(f'state: {state.device} it: {it.device}')
+            ys = torch.cat([state[0][0], it.unsqueeze(1)], dim=1)
             past = state[1:]
         out, past = self.model.decode(memory, mask, ys, subsequent_mask(ys.size(1)).to(memory.device), past=past,
                                       memory_matrix=self.memory_matrix)
