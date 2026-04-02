@@ -5,7 +5,7 @@ import time
 import torch
 import pandas as pd
 from numpy import inf
-
+from tqdm import tqdm
 import logging
 
 
@@ -203,7 +203,7 @@ class Trainer(BaseTrainer):
         
         train_loss = 0
         self.model.train()
-        for batch_idx, (images_id, images, reports_ids, reports_masks) in enumerate(self.train_dataloader):
+        for batch_idx, (images_id, images, reports_ids, reports_masks) in enumerate(tqdm(self.train_dataloader, desc='Training')):
             images, reports_ids, reports_masks = images.to(self.device), reports_ids.to(self.device), reports_masks.to(
                 self.device)
             output = self.model(images, reports_ids, mode = 'train')
@@ -225,7 +225,7 @@ class Trainer(BaseTrainer):
         self.model.eval()
         with torch.no_grad():
             val_gts, val_res = [], []
-            for batch_idx, (images_id, images, reports_ids, reports_masks) in enumerate(self.val_dataloader):
+            for batch_idx, (images_id, images, reports_ids, reports_masks) in enumerate(tqdm(self.val_dataloader, desc='Validating')):
                 images, reports_ids, reports_masks = images.to(self.device), reports_ids.to(
                     self.device), reports_masks.to(self.device)
                 output = self.model(images, mode='sample')
@@ -241,7 +241,7 @@ class Trainer(BaseTrainer):
         self.model.eval()
         with torch.no_grad():
             test_gts, test_res = [], []
-            for batch_idx, (images_id, images, reports_ids, reports_masks) in enumerate(self.test_dataloader):
+            for batch_idx, (images_id, images, reports_ids, reports_masks) in enumerate(tqdm(self.test_dataloader, desc='Testing')):
                 images, reports_ids, reports_masks = images.to(self.device), reports_ids.to(
                     self.device), reports_masks.to(self.device)
                 output = self.model(images, mode='sample')

@@ -75,7 +75,7 @@ class Tester(BaseTester):
         self.model.eval()
         with torch.no_grad():
             test_gts, test_res, test_ids = [], [], []
-            for batch_idx, (images_id, images, reports_ids, reports_masks) in tqdm(enumerate(self.test_dataloader)):
+            for batch_idx, (images_id, images, reports_ids, reports_masks) in enumerate(tqdm(self.test_dataloader, desc='Testing')):
                 images_id, images, reports_ids, reports_masks = images_id[0], images.to(self.device), reports_ids.to(
                     self.device), reports_masks.to(self.device)
                 output = self.model(images, mode='sample')
