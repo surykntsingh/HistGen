@@ -634,6 +634,8 @@ class BaseHistGen(AttModel):
         out, past = self.model.decode(memory, mask, ys, subsequent_mask(ys.size(1)).to(memory.device), past=past,
                                       memory_matrix=self.memory_matrix)
 
+        print(f'past: {past}, memory: {memory.device}')
+
         if not self.training:
             self._save_attns(start=len(state) == 0)
         return out[:, -1], [ys.unsqueeze(0)] + past
