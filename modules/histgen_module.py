@@ -292,6 +292,8 @@ class Encoder(nn.Module):
     def forward(self, x, mask):
         for layer in self.layers:
             x = layer(x, mask)
+
+        print(f'x:{x.device}')
         return self.norm(x)
 
 
