@@ -17,7 +17,7 @@ def parse_agrs():
 
     # Data loader settings
     parser.add_argument('--dataset_name', type=str, default='TCGA', choices=['TCGA','HistAI','REG'], help='the dataset to be used.')
-    parser.add_argument('--max_seq_length', type=int, default=600, help='the maximum sequence length of the reports.')
+    parser.add_argument('--max_seq_length', type=int, default=60, help='the maximum sequence length of the reports.')
     parser.add_argument('--max_fea_length', type=int, default=10000, help='the maximum sequence length of the patch embeddings.')
 
     parser.add_argument('--threshold', type=int, default=3, help='the cut off frequency for the words.')
