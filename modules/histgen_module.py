@@ -487,7 +487,7 @@ class Embeddings(nn.Module):
         self.d_model = d_model
 
     def forward(self, x):
-        print(f'x: {x.device}, lut: {self.lut.device}')
+        print(f'x: {x.device}, lut: {self.lut}')
         return self.lut(x) * math.sqrt(self.d_model)
 
 
