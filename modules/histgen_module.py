@@ -628,7 +628,7 @@ class BaseHistGen(AttModel):
             past = [fc_feats_ph.new_zeros(self.num_layers * 2, fc_feats_ph.shape[0], 0, self.d_model),
                     fc_feats_ph.new_zeros(self.num_layers * 2, fc_feats_ph.shape[0], 0, self.d_model)]
         else:
-            print(f'state: {state.device} it: {it.device}')
+            print(f'state: {state[0][0].device} it: {it.device}')
             ys = torch.cat([state[0][0], it.unsqueeze(1)], dim=1)
             past = state[1:]
         out, past = self.model.decode(memory, mask, ys, subsequent_mask(ys.size(1)).to(memory.device), past=past,
