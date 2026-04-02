@@ -203,7 +203,7 @@ class Trainer(BaseTrainer):
         
         train_loss = 0
         self.model.train()
-        for batch_idx, (images_id, images, reports_ids, reports_masks) in enumerate(tqdm(self.train_dataloader[:10], desc='Training')):
+        for batch_idx, (images_id, images, reports_ids, reports_masks) in enumerate(tqdm(self.train_dataloader, desc='Training')):
             images, reports_ids, reports_masks = images.to(self.device), reports_ids.to(self.device), reports_masks.to(
                 self.device)
             output = self.model(images, reports_ids, mode = 'train')
@@ -218,6 +218,7 @@ class Trainer(BaseTrainer):
                 self.logger.info('[{}/{}] Step: {}/{}, Training Loss: {:.5f}.'
                                  .format(epoch, self.epochs, batch_idx, len(self.train_dataloader),
                                          train_loss / (batch_idx + 1)))
+            break
             
         log = {'train_loss': train_loss / len(self.train_dataloader)}
         
