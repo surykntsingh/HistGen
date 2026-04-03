@@ -25,15 +25,15 @@ def parse_agrs():
     parser = argparse.ArgumentParser()
 
     # Data input settings
-    parser.add_argument('--image_dir', type=str, default='/lustre/nvwulf/projects/PrasannaGroup-nvwulf/surya/datasets/TCGA_processed/brca_v2/features_conch_v15', help='the path to the directory containing the data.')
-    parser.add_argument('--ann_path', type=str, default='/lustre/nvwulf/projects/PrasannaGroup-nvwulf/surya/datasets/TCGA_processed/brca_v2/tcga_brca_reports_splits.json', help='the path to the directory containing the data.')
+    # parser.add_argument('--image_dir', type=str, default='/lustre/nvwulf/projects/PrasannaGroup-nvwulf/surya/datasets/TCGA_processed/brca_v2/features_conch_v15', help='the path to the directory containing the data.')
+    # parser.add_argument('--ann_path', type=str, default='/lustre/nvwulf/projects/PrasannaGroup-nvwulf/surya/datasets/TCGA_processed/brca_v2/tcga_brca_reports_splits.json', help='the path to the directory containing the data.')
 
-    # parser.add_argument('--image_dir', type=str,
-    #                     default='/lustre/nvwulf/projects/PrasannaGroup-nvwulf/surya/datasets/REG_2025/train/20x_512px_0px_overlap/features_conch_v15',
-    #                     help='the path to the directory containing the data.')
-    # parser.add_argument('--ann_path', type=str,
-    #                     default='/lustre/nvwulf/projects/PrasannaGroup-nvwulf/surya/datasets/REG_2025/reg_reports_splits.json',
-    #                     help='the path to the directory containing the data.')
+    parser.add_argument('--image_dir', type=str,
+                        default='/lustre/nvwulf/projects/PrasannaGroup-nvwulf/surya/datasets/REG_2025/train/20x_512px_0px_overlap/features_conch_v15',
+                        help='the path to the directory containing the data.')
+    parser.add_argument('--ann_path', type=str,
+                        default='/lustre/nvwulf/projects/PrasannaGroup-nvwulf/surya/datasets/REG_2025/reg_reports_splits.json',
+                        help='the path to the directory containing the data.')
 
     # Data loader settings
     parser.add_argument('--dataset_name', type=str, default='TCGA', choices=['TCGA','HistAI','REG'], help='the dataset to be used.')
@@ -83,8 +83,8 @@ def parse_agrs():
     # Trainer settings
     parser.add_argument('--n_gpu', type=str, default='0', help='the number of gpus to be used.')
     parser.add_argument('--epochs', type=int, default=150, help='the number of training epochs.')
-    parser.add_argument('--save_dir', type=str, default='results/BRCA/2/', help='the patch to save the models.')
-    parser.add_argument('--record_dir', type=str, default='records/BRCA/2/', help='the patch to save the results of experiments')
+    parser.add_argument('--save_dir', type=str, default='results/REG/3/', help='the patch to save the models.')
+    parser.add_argument('--record_dir', type=str, default='records/REG/3/', help='the patch to save the results of experiments')
     parser.add_argument('--save_period', type=int, default=1, help='the saving period.')
     parser.add_argument('--monitor_mode', type=str, default='max', choices=['min', 'max'], help='whether to max or min the metric.')
     parser.add_argument('--monitor_metric', type=str, default='BLEU_4', help='the metric to be monitored.')
