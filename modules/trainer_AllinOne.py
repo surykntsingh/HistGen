@@ -254,6 +254,8 @@ class Trainer(BaseTrainer):
             val_gts, val_res = self.model.module.tokenizer.decode_batch(val_gts_ids[:,1:]), self.model.module.tokenizer.decode_batch(val_res_ids)
 
             # val_res = list(map(lambda x: 'placeholder' if x.strip() == '' else x, val_res))
+
+            print(f'val_res: {val_res} \nval_gts: {val_gts}')
             val_met = self.metric_ftns({i: [gt] for i, gt in enumerate(val_gts)},
                                        {i: [re] for i, re in enumerate(val_res)})
             log.update(**{'val_' + k: v for k, v in val_met.items()})
@@ -278,9 +280,9 @@ class Trainer(BaseTrainer):
 
                 test_gts, test_res = self.model.module.tokenizer.decode_batch(test_gts_ids[:,1:]), self.model.module.tokenizer.decode_batch(test_res_ids)
 
-                test_res = list(map(lambda x: 'placeholder' if x.strip() == '' else x, test_res))
+                # test_res = list(map(lambda x: 'placeholder' if x.strip() == '' else x, test_res))
 
-                # print(f'test_res: {test_res} \ntest_gts: {test_gts}')
+                print(f'test_res: {test_res} \ntest_gts: {test_gts}')
                 test_met = self.metric_ftns({i: [gt] for i, gt in enumerate(test_gts)},
                                             {i: [re] for i, re in enumerate(test_res)})
                 log.update(**{'test_' + k: v for k, v in test_met.items()})
