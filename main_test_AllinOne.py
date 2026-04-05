@@ -29,7 +29,7 @@ def parse_agrs():
                         help='the path to the directory containing the data.')
 
     # Data loader settings
-    parser.add_argument('--dataset_name', type=str, default='TCGA', choices=['TCGA','HistAI','REG'], help='the dataset to be used.')
+    parser.add_argument('--dataset_name', type=str, default='HistAI', choices=['TCGA','HistAI','REG'], help='the dataset to be used.')
     parser.add_argument('--max_seq_length', type=int, default=600, help='the maximum sequence length of the reports.')
     parser.add_argument('--max_fea_length', type=int, default=10000, help='the maximum sequence length of the patch embeddings.')
 

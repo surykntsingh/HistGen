@@ -9,12 +9,17 @@ class Tokenizer(object):
         self.ann_path = args.ann_path
         self.threshold = args.threshold
         self.dataset_name = args.dataset_name
-        if self.dataset_name == 'iu_xray':
-            self.clean_report = self.clean_report_iu_xray
-        elif self.dataset_name == 'wsi_report':
+        # if self.dataset_name == 'iu_xray':
+        #     self.clean_report = self.clean_report_iu_xray
+        # elif self.dataset_name == 'wsi_report':
+        #     self.clean_report = self.clean_report_pathology
+        # else:
+        #     self.clean_report = self.clean_report_mimic_cxr
+        if self.dataset_name == 'TCGA':
             self.clean_report = self.clean_report_pathology
         else:
-            self.clean_report = self.clean_report_mimic_cxr
+            self.clean_report = lambda x: x
+
         self.ann = json.loads(open(self.ann_path, 'r').read())
         self.token2idx, self.idx2token = self.create_vocabulary()
 
