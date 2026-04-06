@@ -214,7 +214,7 @@ class Trainer(BaseTrainer):
     def _train_epoch(self, epoch, model_name):
 
         self.logger.info('[{}/{}] Start to train in the training set.'.format(epoch, self.epochs))
-        dist.barrier()
+        # dist.barrier()
         train_loss = 0
         self.model.train()
         for batch_idx, (images_id, images, reports_ids, reports_masks) in enumerate(tqdm(self.train_dataloader, desc='Training')):
@@ -235,7 +235,7 @@ class Trainer(BaseTrainer):
         log = {'train_loss': train_loss / len(self.train_dataloader)}
         
         self.logger.info('[{}/{}] Start to evaluate in the validation set.'.format(epoch, self.epochs))
-        dist.barrier()
+        # dist.barrier()
         self.model.eval()
         with torch.no_grad():
             val_gts_ids, val_res_ids = [], []
@@ -263,7 +263,7 @@ class Trainer(BaseTrainer):
 
         self.logger.info('[{}/{}] Start to evaluate in the test set.'.format(epoch, self.epochs))
         if epoch % 1==0:
-            dist.barrier()
+            # dist.barrier()
             self.model.eval()
             with torch.no_grad():
                 test_gts_ids, test_res_ids = [], []
