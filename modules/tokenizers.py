@@ -23,6 +23,8 @@ class Tokenizer(object):
         self.ann = json.loads(open(self.ann_path, 'r').read())
         self.token2idx, self.idx2token = self.create_vocabulary()
 
+        print('vocab size',self.token2idx)
+
     def create_vocabulary(self):
         total_tokens = []
 
