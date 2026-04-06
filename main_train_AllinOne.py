@@ -157,8 +157,8 @@ def main():
     # np.random.seed(args.seed)
     
         
-    # tokenizer = Tokenizer(args)
-    tokenizer = MedicalReportTokenizer(args)
+    tokenizer = Tokenizer(args)
+    # tokenizer = MedicalReportTokenizer(args)
     
     train_dataloader = R2DataLoader(args, tokenizer, split='train', shuffle=False)
     val_dataloader = R2DataLoader(args, tokenizer, split='val', shuffle=False)
