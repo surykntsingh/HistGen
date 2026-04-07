@@ -186,7 +186,10 @@ def main():
     model = HistGenModel(args, tokenizer).to(local_rank)
 
     if args.resume is not None:
-        _resume_checkpoint(model, args.resume)
+        resume_path = str(args.resume)
+        print("Loading checkpoint: {} ...".format(resume_path))
+        checkpoint = torch.load(resume_path)
+        model.load_state_dict(checkpoint['state_dict'])
 
     model = DDP(model, device_ids=[local_rank], output_device=local_rank, find_unused_parameters=True)
     
@@ -206,15 +209,15 @@ def main():
             os.makedirs(checkpoint_dir)
     trainer.train(local_rank)
 
-def _resume_checkpoint(model, resume_path):
-    resume_path = str(resume_path)
-    resume_path = os.path.join(resume_path)
-    print("Loading checkpoint: {} ...".format(resume_path))
-    checkpoint = torch.load(resume_path)['state_dict']
-    model_dict = model.state_dict()
-    state_dict = {k:v for k,v in checkpoint.items()}
-    model_dict.update(state_dict)
-    model.load_state_dict(model_dict)
+# def _resume_checkpoint(model, resume_path):
+#     resume_path = str(resume_path)
+#     resume_path = os.path.join(resume_path)
+#     print("Loading checkpoint: {} ...".format(resume_path))
+#     checkpoint = torch.load(resume_path)['state_dict']
+#     model_dict = model.state_dict()
+#     state_dict = {k:v for k,v in checkpoint.items()}
+#     model_dict.update(state_dict)
+#     model.load_state_dict(model_dict)
 
 
 if __name__ == '__main__':

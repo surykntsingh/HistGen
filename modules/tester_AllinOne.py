@@ -34,7 +34,7 @@ class BaseTester(object):
         if not os.path.exists(self.save_dir):
             os.makedirs(self.save_dir)
 
-        self._load_checkpoint(args.load)
+        # self._load_checkpoint(args.load)
 
     @abstractmethod
     def test(self):
