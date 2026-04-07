@@ -28,14 +28,15 @@ class Tokenizer(object):
     def create_vocabulary(self):
         total_tokens = []
 
-        # for example in self.ann['train']:
-        #     tokens = self.clean_report(example['report']).split()
-        #     for token in tokens:
-        #         total_tokens.append(token)
+        for example in self.ann['train']:
+            tokens = self.clean_report(example['report']).split()
+            for token in tokens:
+                total_tokens.append(token)
 
-        for split in self.ann:
-            tokens = self.clean_report(split['report']).split()
-            total_tokens.extend(tokens)
+        # for split in self.ann:
+        #     for example in self.ann[split]:
+        #         tokens = self.clean_report(example['report']).split()
+        #         total_tokens.extend(tokens)
 
         counter = Counter(total_tokens)
         vocab = [k for k, v in counter.items() if v >= self.threshold] + ['<unk>']
