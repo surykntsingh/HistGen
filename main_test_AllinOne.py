@@ -141,8 +141,8 @@ def main():
     torch.cuda.set_device(local_rank)
     init_seeds(args.seed + local_rank)
     
-    # tokenizer = Tokenizer(args)
-    tokenizer = MedicalReportTokenizer(args)
+    tokenizer = Tokenizer(args)
+    # tokenizer = MedicalReportTokenizer(args)
     test_dataloader = R2DataLoader(args, tokenizer, split='test', shuffle=False)
     model = HistGenModel(args, tokenizer).to(local_rank)
     model = DDP(model, device_ids=[local_rank], output_device=local_rank, find_unused_parameters=True)
