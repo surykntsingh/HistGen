@@ -155,7 +155,7 @@ class BaseTrainer(object):
             'optimizer': self.optimizer.state_dict(),
             'monitor_best': self.mnt_best
         }
-        print(f'state: {state["state_dict"].keys()}')
+        # print(f'state: {state["state_dict"].keys()}')
         filename = os.path.join(self.checkpoint_dir, 'current_checkpoint.pth')
         torch.save(state, filename)
         self.logger.info("Saving checkpoint: {} ...".format(filename))

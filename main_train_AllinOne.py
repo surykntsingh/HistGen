@@ -187,7 +187,7 @@ def main():
 
     if args.resume is not None:
         resume_path = str(args.resume)
-        print("Loading checkpoint: {} ...".format(resume_path))
+        # print("Loading checkpoint: {} ...".format(resume_path))
         checkpoint = torch.load(resume_path)['state_dict']
         # model.load_state_dict(checkpoint['state_dict'])
         model_dict = model.state_dict()
