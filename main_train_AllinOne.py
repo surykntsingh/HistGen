@@ -184,6 +184,10 @@ def main():
     #     raise ValueError('Invalid model name')
 
     model = HistGenModel(args, tokenizer).to(local_rank)
+
+    if args.resume is not None:
+        _resume_checkpoint(model, args.resume)
+
     model = DDP(model, device_ids=[local_rank], output_device=local_rank, find_unused_parameters=True)
     
     # get function handles of loss and metrics
@@ -201,6 +205,16 @@ def main():
         if local_rank == 0:
             os.makedirs(checkpoint_dir)
     trainer.train(local_rank)
+
+def _resume_checkpoint(model, resume_path):
+    resume_path = str(resume_path)
+    resume_path = os.path.join(resume_path)
+    print("Loading checkpoint: {} ...".format(resume_path))
+    checkpoint = torch.load(resume_path)['state_dict']
+    model_dict = model.state_dict()
+    state_dict = {k:v for k,v in checkpoint.items()}
+    model_dict.update(state_dict)
+    model.load_state_dict(model_dict)
 
 
 if __name__ == '__main__':
