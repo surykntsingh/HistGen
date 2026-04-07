@@ -193,7 +193,7 @@ def main():
         model_dict = model.state_dict()
         state_dict = {k: v for k, v in checkpoint.items()}
 
-        print(f'model: {len(model_dict.keys())}, state: {(state_dict.keys())}')
+        print(f'model: {len(model_dict.keys())}, state: {len(state_dict.keys())}')
         model_dict.update(state_dict)
         model.load_state_dict(model_dict)
 
