@@ -146,7 +146,7 @@ def main():
     test_dataloader = R2DataLoader(args, tokenizer, split='test', shuffle=False)
     model = HistGenModel(args, tokenizer).to(local_rank)
 
-    load_path = f'{str(args.load_path)}/model_best.pth'
+    load_path = f'{str(args.load)}/model_best.pth'
     print("Loading checkpoint: {} ...".format(load_path))
     checkpoint = torch.load(load_path)
     model.load_state_dict(checkpoint['state_dict'])
