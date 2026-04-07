@@ -51,8 +51,8 @@ class BaseTrainer(object):
         # if not os.path.exists(self.checkpoint_dir):
         #     os.makedirs(self.checkpoint_dir)
 
-        if args.resume is not None:
-            self._resume_checkpoint(args.resume)
+        # if args.resume is not None:
+        #     self._resume_checkpoint(args.resume)
 
         self.best_recorder = {'val': {self.mnt_metric: self.mnt_best},
                               'test': {self.mnt_metric_test: self.mnt_best}}
