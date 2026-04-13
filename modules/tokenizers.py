@@ -17,6 +17,8 @@ class Tokenizer(object):
         #     self.clean_report = self.clean_report_mimic_cxr
         if self.dataset_name == 'TCGA':
             self.clean_report = self.clean_report_pathology
+        elif self.dataset_name == 'HistAI':
+            self.clean_report = self.clean_report_pathology
         else:
             self.clean_report = lambda x: x
 

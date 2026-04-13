@@ -29,7 +29,7 @@ def parse_agrs():
                         help='the path to the directory containing the data.')
 
     # Data loader settings
-    parser.add_argument('--dataset_name', type=str, default='TCGA', choices=['TCGA','HistAI','REG'], help='the dataset to be used.')
+    parser.add_argument('--dataset_name', type=str, default='HistAI', choices=['TCGA','HistAI','REG'], help='the dataset to be used.')
     parser.add_argument('--max_seq_length', type=int, default=600, help='the maximum sequence length of the reports.')
     parser.add_argument('--max_fea_length', type=int, default=10000, help='the maximum sequence length of the patch embeddings.')
 
@@ -76,9 +76,9 @@ def parse_agrs():
     # Trainer settings
     parser.add_argument('--n_gpu', type=str, default=1, help='the number of gpus to be used.')
     parser.add_argument('--epochs', type=int, default=100, help='the number of training epochs.')
-    parser.add_argument('--save_dir', type=str, default='results/HistAI/1/', help='the patch to save the models.')
-    parser.add_argument('--record_dir', type=str, default='results/HistAI/1/', help='the patch to save the results of experiments')
-    parser.add_argument('--load', type=str, default='results/HistAI/1//', help='whether to load a pre-trained model.')
+    parser.add_argument('--save_dir', type=str, default='results/HistAI/3/', help='the patch to save the models.')
+    parser.add_argument('--record_dir', type=str, default='results/HistAI/3/', help='the patch to save the results of experiments')
+    parser.add_argument('--load', type=str, default='results/HistAI/3/', help='whether to load a pre-trained model.')
 
     parser.add_argument('--save_period', type=int, default=1, help='the saving period.')
     parser.add_argument('--monitor_mode', type=str, default='max', choices=['min', 'max'], help='whether to max or min the metric.')
